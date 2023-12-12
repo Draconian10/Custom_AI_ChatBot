@@ -1,6 +1,6 @@
 import streamlit as st
 import langchain
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
@@ -13,9 +13,11 @@ from langchain.llms import HuggingFaceHub
 import os
 from PyPDF2 import PdfReader
 from docx import Document
+import toml
 
 def main():
-    load_dotenv()
+    #load_dotenv()
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
     st.set_page_config(page_title="Chat with multiple files", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
