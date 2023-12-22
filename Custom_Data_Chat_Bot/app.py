@@ -111,50 +111,50 @@ def main():
                     st.session_state.conversation = conversation_chain
 
     elif selected_tab == "Text":
-    st.sidebar.subheader("Enter Text")
-    user_text = st.sidebar.text_area("Enter your text here", "")
+        st.sidebar.subheader("Enter Text")
+        user_text = st.sidebar.text_area("Enter your text here", "")
 
-    if st.sidebar.button("Process Text"):
-        if not user_text.strip():
-            st.warning("Please enter some text before processing.")
-        else:
-            # Process the user's entered text
-            if user_text:
-                # total_character_count = len(user_text)
-                # if total_character_count > 400000:
-                #     st.warning("Total input data should not exceed 400,000 characters.")
-                #     st.stop()
+        if st.sidebar.button("Process Text"):
+            if not user_text.strip():
+                st.warning("Please enter some text before processing.")
+            else:
+                # Process the user's entered text
+                if user_text:
+                    # total_character_count = len(user_text)
+                    # if total_character_count > 400000:
+                    #     st.warning("Total input data should not exceed 400,000 characters.")
+                    #     st.stop()
 
-                st.session_state.conversation = None
-                st.session_state.chat_history = None
+                    st.session_state.conversation = None
+                    st.session_state.chat_history = None
 
-                # initialize pinecone
-                pinecone.init(api_key=pinecone_api_key, environment=pinecone_env)
+                    # initialize pinecone
+                    pinecone.init(api_key=pinecone_api_key, environment=pinecone_env)
 
-                if index_name in pinecone.list_indexes():
-                    pinecone.delete_index(index_name)
+                    if index_name in pinecone.list_indexes():
+                        pinecone.delete_index(index_name)
 
-                # we create a new index
-                pinecone.create_index(name=index_name, metric='cosine',
-                                      dimension=1536)  # 1536 dim of text-embedding-ada-002
+                    # we create a new index
+                    pinecone.create_index(name=index_name, metric='cosine',
+                                          dimension=1536)  # 1536 dim of text-embedding-ada-002
 
-                # wait for index to be initialized
-                while not pinecone.describe_index(index_name).status['ready']:
-                    time.sleep(1)
+                    # wait for index to be initialized
+                    while not pinecone.describe_index(index_name).status['ready']:
+                        time.sleep(1)
 
-                st.session_state.conversation = None
-                st.session_state.chat_history = None
+                    st.session_state.conversation = None
+                    st.session_state.chat_history = None
 
-                text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
-                text_chunks = text_splitter.split_text(user_text)
+                    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+                    text_chunks = text_splitter.split_text(user_text)
 
-                embeddings = OpenAIEmbeddings()
-                vectorstore = Pinecone.from_texts(text_chunks, embeddings, index_name=index_name)
+                    embeddings = OpenAIEmbeddings()
+                    vectorstore = Pinecone.from_texts(text_chunks, embeddings, index_name=index_name)
 
-                llm = ChatOpenAI(model_name = 'gpt-4')
-                memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-                conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
-                st.session_state.conversation = conversation_chain
+                    llm = ChatOpenAI(model_name = 'gpt-4')
+                    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+                    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+                    st.session_state.conversation = conversation_chain
 
 if __name__ == '__main__':
     main()
