@@ -111,16 +111,19 @@ def main():
                     st.session_state.conversation = conversation_chain
 
     elif selected_tab == "Text":
-        st.sidebar.subheader("Enter Text")
-        user_text = st.sidebar.text_area("Enter your text here", "")
+    st.sidebar.subheader("Enter Text")
+    user_text = st.sidebar.text_area("Enter your text here", "")
 
-        if st.sidebar.button("Process Text"):
+    if st.sidebar.button("Process Text"):
+        if not user_text.strip():
+            st.warning("Please enter some text before processing.")
+        else:
             # Process the user's entered text
             if user_text:
-                total_character_count = len(user_text)
-                if total_character_count > 400000:
-                    st.warning("Total input data should not exceed 400,000 characters.")
-                    st.stop()
+                # total_character_count = len(user_text)
+                # if total_character_count > 400000:
+                #     st.warning("Total input data should not exceed 400,000 characters.")
+                #     st.stop()
 
                 st.session_state.conversation = None
                 st.session_state.chat_history = None
