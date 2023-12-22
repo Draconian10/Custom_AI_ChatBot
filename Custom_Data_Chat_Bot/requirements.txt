@@ -10,3 +10,4 @@ reportlab
 pyttsx3
 wikipedia-api
 python-docx
+pinecone-client
